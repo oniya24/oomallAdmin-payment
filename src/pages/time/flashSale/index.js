@@ -12,6 +12,7 @@ import {
 } from 'antd';
 import { mapStateToProps, mapDispatchToProps } from '@/models/Time';
 import pagination from '@/utils/pagination';
+import { format2Second, format2Day } from '@/utils/time.tsx';
 const newAdmin = ({
   flashSegList,
   flashSegTotal,
@@ -20,7 +21,7 @@ const newAdmin = ({
   getAllFlashsaleSegments,
   postCreateFlashsaleSegments,
   deleteFlashsaleSegmentsById,
-  saveAdverPagination,
+  saveFlashPagination,
 }) => {
   const { depart_id, userName, mobile } = JSON.parse(
     sessionStorage.getItem('adminInfo'),
@@ -32,15 +33,29 @@ const newAdmin = ({
       did: depart_id,
       id,
     });
+    await getAllFlashsaleSegments({
+      did: depart_id,
+      page: flashSegPage,
+      pageSize: flashSegPageSize,
+    });
   };
   const handleCreateAdverSeg = () => {
     setModalVisible(true);
   };
   const handleSubmitCreate = () => {
-    form.validateFields(['beginTime', 'endTime']).then(value => {
-      console.log(value);
-      // await postCreateFlashsaleSegments(value)
+    form.validateFields(['beginTime', 'endTime']).then(async value => {
+      const { beginTime, endTime } = value;
+      await postCreateFlashsaleSegments({
+        did: depart_id,
+        beginTime: format2Second(beginTime),
+        endTime: format2Second(endTime),
+      });
       setModalVisible(false);
+      await getAllFlashsaleSegments({
+        did: depart_id,
+        page: flashSegPage,
+        pageSize: flashSegPageSize,
+      });
     });
     // postCreateFlashsaleSegments
   };
@@ -88,12 +103,11 @@ const newAdmin = ({
     ];
   }, []);
   useEffect(() => {
-    // getAllFlashsaleSegments({
-    //   did: depart_id,
-    //   page: flashSegPage,
-    //   pageSize: flashSegPageSize
-    // });
-    console.log('fetch new');
+    getAllFlashsaleSegments({
+      did: depart_id,
+      page: flashSegPage,
+      pageSize: flashSegPageSize,
+    });
   }, [flashSegPage, flashSegPageSize]);
   return (
     <Card>
@@ -104,7 +118,7 @@ const newAdmin = ({
       </div>
       <Table
         scroll={{ x: true }}
-        pagination={pagination(flashSegTotal, saveAdverPagination)}
+        pagination={pagination(flashSegTotal, saveFlashPagination)}
         rowKey={record => record.dataIndex}
         columns={columns}
         dataSource={flashSegList}

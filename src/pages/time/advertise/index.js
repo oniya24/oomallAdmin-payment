@@ -11,7 +11,9 @@ import {
   Modal,
 } from 'antd';
 import { mapStateToProps, mapDispatchToProps } from '@/models/Time';
+import moment from 'moment';
 import pagination from '@/utils/pagination';
+import { format2Second, format2Day } from '@/utils/time.tsx';
 const newAdmin = ({
   adverSegList,
   adverSegTotal,
@@ -32,15 +34,29 @@ const newAdmin = ({
       did: depart_id,
       id,
     });
+    await getAllAdvertiseSegments({
+      did: depart_id,
+      page: adverSegPage,
+      pageSize: adverSegPageSize,
+    });
   };
   const handleCreateAdverSeg = () => {
     setModalVisible(true);
   };
   const handleSubmitCreate = () => {
-    form.validateFields(['beginTime', 'endTime']).then(value => {
-      console.log(value);
-      // await postCreateAdvertiseSegments(value)
+    form.validateFields(['beginTime', 'endTime']).then(async value => {
+      const { beginTime, endTime } = value;
+      await postCreateAdvertiseSegments({
+        did: depart_id,
+        beginTime: format2Second(beginTime),
+        endTime: format2Second(endTime),
+      });
       setModalVisible(false);
+      await getAllAdvertiseSegments({
+        did: depart_id,
+        page: adverSegPage,
+        pageSize: adverSegPageSize,
+      });
     });
     // postCreateAdvertiseSegments
   };
@@ -55,21 +71,25 @@ const newAdmin = ({
         title: '开始时间',
         dataIndex: 'beginTime',
         key: 'beginTime',
+        render: text => format2Second(text),
       },
       {
         title: '结束时间',
         dataIndex: 'endTime',
         key: 'endTime',
+        render: text => format2Second(text),
       },
       {
         title: '创建时间',
         dataIndex: 'gmtCreate',
         key: 'gmtCreate',
+        render: text => format2Second(text),
       },
       {
         title: '修改时间',
         dataIndex: 'gmtModified',
         key: 'gmtModified',
+        render: text => format2Second(text),
       },
       {
         title: '操作',
@@ -88,12 +108,11 @@ const newAdmin = ({
     ];
   }, []);
   useEffect(() => {
-    // getAllAdvertiseSegments({
-    //   did: depart_id,
-    //   page: adverSegPage,
-    //   pageSize: adverSegPageSize
-    // });
-    console.log('fetch new');
+    getAllAdvertiseSegments({
+      did: depart_id,
+      page: adverSegPage,
+      pageSize: adverSegPageSize,
+    });
   }, [adverSegPage, adverSegPageSize]);
   return (
     <Card>

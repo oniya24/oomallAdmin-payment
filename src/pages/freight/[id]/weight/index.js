@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useRef, useState } from 'react';
-import { connect, history } from 'umi';
+import { connect, history, useParams } from 'umi';
 import { Card, Table, Button, Tooltip, Space, Form, DatePicker, Modal, Input, Select } from 'antd';
 import {
   mapStateToProps,
@@ -13,35 +13,56 @@ const freight_weight = ({ freightWeightList, freightWeightTotal,
   const { depart_id, userName, mobile } = JSON.parse(
     sessionStorage.getItem('adminInfo'),
   );
+  const { id: freightId } = useParams()
   const [ modalState, setModalState ] = useState(0) // 0是创建
   const [ modalVisible , setModalVisible ] = useState(false)
   const [ form ] = Form.useForm();
   const handledeleteFreightWeight = async ({id}) => {
-    await deleteFreightModel({
+    await deleteWeightItemsById({
       shopId: depart_id,
-      id
+      id: id
     })
+    await getWeightItemsById({
+      shopId: depart_id,
+      id: freightId
+    });
   }
   const handleCreateFreightWeight = () => {
     setModalState(0)
     setModalVisible(true)
+    form.resetFields()
   }
   const handleModifyFreightWeight = (record) => {
     setModalState(1)
     setModalVisible(true)
     // 这里对time进行处理
-    // form.setFieldsValue(record)
+    form.setFieldsValue(record)
   }
   const handleSubmitCreate = () => {
     form.validateFields().then(async (value)=>{
-      await postDefineShopFreightWeightModel(value)
+      await postCreateWeightItems({ 
+        ...value,
+        shopId: depart_id,
+        id: freightId,
+      })
       setModalVisible(false)
+      await getWeightItemsById({
+        shopId: depart_id,
+        id: freightId
+      });
     })
   }
   const handleSubmitModify = () => {
     form.validateFields().then(async (value)=>{
-      await putModifyFreightModel(value)
+      await putWeightItemsById({ 
+        ...value,
+        shopId: depart_id,
+      })
       setModalVisible(false)
+      await getWeightItemsById({
+        shopId: depart_id,
+        id: freightId
+      });
     })
   }
   const columns = useMemo(() => {
@@ -88,7 +109,7 @@ const freight_weight = ({ freightWeightList, freightWeightTotal,
       },
       {
         title: '创建时间',
-        dataIndex: 'gmtCreate',
+        dataIndex: 'gmtCreated',
         key: 'gmtCreate',
       },
       {
@@ -117,15 +138,13 @@ const freight_weight = ({ freightWeightList, freightWeightTotal,
     ];
   }, []);
   useEffect(() => {
-    // getWeightItemsById({
-    //   shopId: depart_id,
-    //   page: freightPage,
-    //   pageSize: freightPageSize
-    // });
-    console.log("fetch new")
+    getWeightItemsById({
+      shopId: depart_id,
+      id: freightId
+    });
   }, [ ]);
   return (
-    <Card>
+    <Card title="重量模板">
       <div style={{ margin: 10 }}>
         <Button type="primary" onClick={handleCreateFreightWeight}>创建运费模板</Button>
       </div>

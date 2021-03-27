@@ -9,7 +9,9 @@ export const getAllAdvertiseSegmentsReq = ({
   did: number;
   params: pagination;
 }) => {
-  return request(`/shops/${did}/advertisement/timesegments`);
+  return request(`/shops/${did}/advertisement/timesegments`, {
+    params: params,
+  });
 };
 
 // 平台管理员新增广告时间段
@@ -34,7 +36,9 @@ export const deleteAdvertiseSegmentsByIdReq = ({
   did: number;
   id: number;
 }) => {
-  return request(`/shops/${did}/advertisement/timesegments/${id}`);
+  return request(`/shops/${did}/advertisement/timesegments/${id}`, {
+    method: 'delete',
+  });
 };
 
 // 管理员获取秒杀时间段列表
@@ -45,7 +49,9 @@ export const getAllFlashsaleSegmentsReq = ({
   did: number;
   params: pagination;
 }) => {
-  return request(`/shops/${did}/flashsale/timesegments`);
+  return request(`/shops/${did}/flashsale/timesegments`, {
+    params: params,
+  });
 };
 
 // 管理员删除秒杀时间段列表
@@ -56,7 +62,9 @@ export const deleteFlashsaleSegmentsReq = ({
   did: number;
   id: number;
 }) => {
-  return request(`/shops/${did}/advertisement/timesegments/${id}`);
+  return request(`/shops/${did}/advertisement/timesegments/${id}`, {
+    method: 'delete',
+  });
 };
 
 export const postCreateFlashsaleSegmentsReq = ({

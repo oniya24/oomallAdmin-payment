@@ -7,23 +7,33 @@ import {
   mapStateToProps,
   mapDispatchToProps,
 } from '@/models/Freight';
+import { freightModel } from '@/const/oomall'
+
 const { TabPane } = Tabs;
 const freight_id = ({
   freightDetail,
-  getFreightModelById, postDefaultFreightModel, 
+  getFreightModelById, 
+  postDefaultFreightModel, 
 }) => {
   const { depart_id, userName, mobile } = JSON.parse(
     sessionStorage.getItem('adminInfo'),
   );
   const { name, type, unit, isDefault } = freightDetail;
   const { id } = useParams()
-  const setDefaultModel = (value) => {
+  const setDefaultModel = async (value) => {
     console.log(value)
-    postDefaultFreightModel()
+    await postDefaultFreightModel({
+      id: id,
+      shopId: depart_id
+    })
+    await getFreightModelById({
+      shopId: depart_id,
+      id
+    })
   }
   useEffect(() => {
     getFreightModelById({
-      depart_id,
+      shopId: depart_id,
       id
     })
   }, [])
@@ -38,25 +48,27 @@ const freight_id = ({
       }
     >
       <Card style={{margin: 0}} >
-        <Space>
-          <span>模板名</span> <span>{name}</span>
-          <span>unit</span> <span>{unit}</span>
-          <span>type</span> <span>{type}</span>
-        </Space>
-        <Space>
-          <span>是否是默认模板</span><Switch defaultChecked={isDefault} onChange={setDefaultModel}></Switch>
-        </Space>
+        <div>
+          <Space>
+            <span>模板名: </span> <span>{name}</span>
+            <span>计重单位g: </span> <span>{unit}</span>
+            <span>模板类型: </span> <span>{freightModel[type]}</span>
+          </Space>
+        </div>
+        <div>
+          <span>是否是默认模板: </span><Switch defaultChecked={isDefault} onChange={setDefaultModel}></Switch>
+        </div>
       </Card>
-      <Card>
-        <Tabs>
-          <TabPane key="weight" tab="重量模板">
-            <Weight></Weight>
-          </TabPane>
-          <TabPane key="piece" tab="件数模板">
-            <Piece></Piece>
-          </TabPane>
-        </Tabs>
-      </Card>
+      {
+        Number(type) === 0 && (
+          <Weight></Weight>
+        )
+      }
+      {
+        Number(type) === 1 && (
+          <Piece></Piece>
+        )
+      }
     </Card>
   );
 };

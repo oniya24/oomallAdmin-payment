@@ -9,9 +9,9 @@ const adminManage = () => {
         <TabPane key="adverTime" tab="广告时间段">
           <AdverTime></AdverTime>
         </TabPane>
-        {/* <TabPane key="flashTime" tab="秒杀时间段">
+        <TabPane key="flashTime" tab="秒杀时间段">
           <FlashTime></FlashTime>
-        </TabPane> */}
+        </TabPane>
       </Tabs>
     </Card>
   );

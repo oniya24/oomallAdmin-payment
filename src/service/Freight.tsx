@@ -8,13 +8,13 @@ interface freightModel {
 }
 // 管理员定义店铺的运费模板
 export const postDefineShopFreightModelReq = ({
-  id,
+  shopId,
   ...data
 }: {
-  id: number;
+  shopId: number;
   data: freightModel;
 }) => {
-  return request(`/shops/${id}/freightmodels`, {
+  return request(`/shops/${shopId}/freightmodels`, {
     method: 'post',
     data: data,
   });
@@ -22,13 +22,13 @@ export const postDefineShopFreightModelReq = ({
 
 // 获得店铺中商品的运费模板
 export const getShopFreightModelReq = ({
-  id,
+  shopId,
   ...params
 }: {
-  id: number;
+  shopId: number;
   params: any;
 }) => {
-  return request(`/shops/${id}/freightmodels`, {
+  return request(`/shops/${shopId}/freightmodels`, {
     method: 'get',
     params: params,
   });
@@ -120,6 +120,7 @@ export const postCreateWeightItemsReq = ({
   id: number;
   data: freightModelWeightInfo;
 }) => {
+  console.log(shopId, id, data);
   return request(`/shops/${shopId}/freightmodels/${id}/weightItems`, {
     method: 'post',
     data: data,
@@ -153,6 +154,7 @@ export const postCreatePieceItemsReq = ({
   id: number;
   data: freightModelPieceInfo;
 }) => {
+  console.log(shopId, id, data);
   return request(`/shops/${shopId}/freightmodels/${id}/pieceItems`, {
     method: 'post',
     data: data,

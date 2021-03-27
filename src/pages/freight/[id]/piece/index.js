@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useRef, useState } from 'react';
-import { connect, history } from 'umi';
+import { connect, history, useParams } from 'umi';
 import { Card, Table, Button, Tooltip, Space, Form, DatePicker, Modal, Input, Select } from 'antd';
 import {
   mapStateToProps,
@@ -13,39 +13,60 @@ const freight_piece = ({ freightPieceList, freightPieceTotal,
   const { depart_id, userName, mobile } = JSON.parse(
     sessionStorage.getItem('adminInfo'),
   );
+  const { id: freightId } = useParams()
+  console.log("fright",freightId, useParams())
   const [ modalState, setModalState ] = useState(0) // 0是创建
   const [ modalVisible , setModalVisible ] = useState(false)
   const [ form ] = Form.useForm();
   const handledeleteFreightPiece = async ({id}) => {
-    await deleteFreightModel({
+    await deletePieceItemsById({
       shopId: depart_id,
-      id
+      id: id
     })
+    await getPieceItemsById({
+      shopId: depart_id,
+      id: freightId,
+    });
   }
   const handleCreateFreightPiece = () => {
     setModalState(0)
     setModalVisible(true)
+    form.resetFields()
   }
   const handleModifyFreightPiece = (record) => {
     setModalState(1)
     setModalVisible(true)
     // 这里对time进行处理
-    // form.setFieldsValue(record)
+    form.setFieldsValue(record)
   }
   const handleSubmitCreate = () => {
     form.validateFields().then(async (value)=>{
-      await postDefineShopFreightPieceModel(value)
+      await postCreatePieceItems({
+        ...value,
+        shopId: depart_id,
+        id: freightId,
+      })
       setModalVisible(false)
+      await getPieceItemsById({
+        shopId: depart_id,
+        id: freightId,
+      });
     })
   }
   const handleSubmitModify = () => {
     form.validateFields().then(async (value)=>{
-      await putModifyFreightModel(value)
+      await putPieceItemsById({
+        ...value,
+        shopId: depart_id,
+      })
       setModalVisible(false)
+      await getPieceItemsById({
+        shopId: depart_id,
+        id: freightId,
+      });
     })
   }
-  const columns = useMemo(() => {
-    return [
+  const columns = [
       {
         title: 'id',
         dataIndex: 'id',
@@ -53,12 +74,12 @@ const freight_piece = ({ freightPieceList, freightPieceTotal,
       },
       {
         title: '首件',
-        dataIndex: 'firstItem',
+        dataIndex: 'firstItems',
         key: 'firstItem',
       },
       {
         title: '首件价格',
-        dataIndex: 'firstItemPrice',
+        dataIndex: 'firstItemsPrice',
         key: 'firstItemPrice',
       },
       {
@@ -73,7 +94,7 @@ const freight_piece = ({ freightPieceList, freightPieceTotal,
       },
       {
         title: '创建时间',
-        dataIndex: 'gmtCreate',
+        dataIndex: 'gmtCreated',
         key: 'gmtCreate',
       },
       {
@@ -99,18 +120,15 @@ const freight_piece = ({ freightPieceList, freightPieceTotal,
           );
         },
       },
-    ];
-  }, []);
+    ]
   useEffect(() => {
     getPieceItemsById({
       shopId: depart_id,
-      page: freightPage,
-      pageSize: freightPageSize
+      id: freightId,
     });
-    console.log("fetch new")
   }, [ ]);
   return (
-    <Card>
+    <Card title="件数模板">
       <div style={{ margin: 10 }}>
         <Button type="primary" onClick={handleCreateFreightPiece}>创建运费模板</Button>
       </div>
@@ -130,7 +148,7 @@ const freight_piece = ({ freightPieceList, freightPieceTotal,
         <Form form={form}>
           <Form.Item label="id" name="id" hidden>
           </Form.Item>
-          <Form.Item label="首件" name="firstItem" required
+          <Form.Item label="首件" name="firstItems" required
             rules={
               [
                 { required: true, message: '请输入名称'}
@@ -139,7 +157,7 @@ const freight_piece = ({ freightPieceList, freightPieceTotal,
           >
             <Input type="number" />
           </Form.Item>
-          <Form.Item label="首件价格" name="firstItemPrice" required
+          <Form.Item label="首件价格" name="firstItemsPrice" required
             rules={
               [
                 { required: true, message: '请输入名称'}

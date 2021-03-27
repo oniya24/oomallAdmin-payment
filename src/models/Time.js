@@ -16,27 +16,11 @@ const namespace = 'time';
 const model = {
   namespace,
   state: {
-    adverSegList: [
-      {
-        id: 0,
-        beginTime: 'string',
-        endTime: 'string',
-        gmtCreate: 'string',
-        gmtModified: 'string',
-      },
-    ],
+    adverSegList: [],
     adverSegTotal: 0,
     adverSegPage: 1,
     adverSegPageSize: 10,
-    flashSegList: [
-      {
-        id: 0,
-        beginTime: 'string',
-        endTime: 'string',
-        gmtCreate: 'string',
-        gmtModified: 'string',
-      },
-    ],
+    flashSegList: [],
     flashSegTotal: 0,
     flashSegPage: 1,
     flashSegPageSize: 10,
@@ -58,9 +42,15 @@ const model = {
     },
     *postCreateAdvertiseSegments({ payload }, { call, put }) {
       const res = yield call(postCreateAdvertiseSegmentsReq, payload);
+      if (isCodeEqualOk(res) || isErrnoEqual0(res)) {
+        message.success('创建成功');
+      }
     },
     *deleteAdvertiseSegmentsById({ payload }, { call, put }) {
       const res = yield call(deleteAdvertiseSegmentsByIdReq, payload);
+      if (isCodeEqualOk(res) || isErrnoEqual0(res)) {
+        message.success('删除成功');
+      }
     },
     *getAllFlashsaleSegments({ payload }, { call, put }) {
       const res = yield call(getAllFlashsaleSegmentsReq, payload);
@@ -76,11 +66,17 @@ const model = {
         });
       }
     },
-    *deleteFlashsaleSegments({ payload }, { call, put }) {
+    *deleteFlashsaleSegmentsById({ payload }, { call, put }) {
       const res = yield call(deleteFlashsaleSegmentsReq, payload);
+      if (isCodeEqualOk(res) || isErrnoEqual0(res)) {
+        message.success('删除成功');
+      }
     },
     *postCreateFlashsaleSegments({ payload }, { call, put }) {
       const res = yield call(postCreateFlashsaleSegmentsReq, payload);
+      if (isCodeEqualOk(res) || isErrnoEqual0(res)) {
+        message.success('创建成功');
+      }
     },
     *saveAdverPagination({ payload }, { call, put }) {
       const { page, pageSize } = payload;

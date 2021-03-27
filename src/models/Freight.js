@@ -24,28 +24,18 @@ const namespace = 'freight';
 const model = {
   namespace,
   state: {
-    freightList: [
-      {
-        id: 0,
-        name: 'string',
-        type: 0,
-        unit: 0,
-        default: true,
-        gmtCreate: 'string',
-        gmtModified: 'string',
-      },
-    ],
+    freightList: [],
     freightTotal: 0,
     freightPage: 1,
     freightPageSize: 10,
     freightDetail: {
       id: 0,
-      name: 'string',
+      name: '',
       type: 0,
       unit: 0,
       isDefault: true,
-      gmtCreate: 'string',
-      gmtModified: 'string',
+      gmtCreate: '',
+      gmtModified: '',
     },
     freightWeightList: [
       {
@@ -98,6 +88,24 @@ const model = {
         });
       }
     },
+    *getFreightModelById({ payload }, { call, put }) {
+      const res = yield call(getFreightModelByIdReq, payload);
+      if (isErrnoEqual0(res) || isCodeEqualOk(res)) {
+        const { data } = res;
+        yield put({
+          type: 'save',
+          payload: {
+            freightDetail: data,
+          },
+        });
+      }
+    },
+    *postDefaultFreightModel({ payload }, { call, put }) {
+      const res = yield call(postDefaultFreightModelReq, payload);
+      if (isErrnoEqual0(res) || isCodeEqualOk(res)) {
+        message.success('操作成功');
+      }
+    },
     *putModifyFreightModel({ payload }, { call, put }) {
       const res = yield call(putModifyFreightModelReq, payload);
       if (isErrnoEqual0(res) || isCodeEqualOk(res)) {
@@ -113,7 +121,7 @@ const model = {
     *postCreateWeightItems({ payload }, { call, put }) {
       const res = yield call(postCreateWeightItemsReq, payload);
       if (isErrnoEqual0(res) || isCodeEqualOk(res)) {
-        message.success('修改成功');
+        message.success('创建成功');
       }
     },
     *getWeightItemsById({ payload }, { call, put }) {
@@ -124,6 +132,7 @@ const model = {
           type: 'save',
           payload: {
             freightWeightList: data,
+            freightWeightTotal: data.length,
           },
         });
       }
@@ -141,9 +150,10 @@ const model = {
       }
     },
     *postCreatePieceItems({ payload }, { call, put }) {
+      console.log('payload', payload);
       const res = yield call(postCreatePieceItemsReq, payload);
       if (isErrnoEqual0(res) || isCodeEqualOk(res)) {
-        message.success('修改成功');
+        message.success('创建成功');
       }
     },
     *getPieceItemsById({ payload }, { call, put }) {
@@ -154,6 +164,7 @@ const model = {
           type: 'save',
           payload: {
             freightPieceList: data,
+            freightPieceTotal: data.length,
           },
         });
       }

@@ -14,6 +14,7 @@ import {
 } from 'antd';
 import { mapStateToProps, mapDispatchToProps } from '@/models/Freight';
 import pagination from '@/utils/pagination';
+import { freightModel } from '@/const/oomall';
 const { Option } = Select;
 const freight = ({
   freightList,
@@ -37,27 +38,51 @@ const freight = ({
       shopId: depart_id,
       id,
     });
+    await getShopFreightModel({
+      shopId: depart_id,
+      page: freightPage,
+      pageSize: freightPageSize,
+    });
   };
   const handleCreateFreight = () => {
     setModalState(0);
     setModalVisible(true);
+    form.resetFields();
   };
   const handleModifyFreight = record => {
     setModalState(1);
     setModalVisible(true);
-    // 这里对time进行处理
-    // form.setFieldsValue(record)
+    form.setFieldsValue(record);
   };
   const handleSubmitCreate = () => {
-    form.validateFields().then(value => {
-      // await postDefineShopFreightModel(value)
+    form.validateFields().then(async value => {
+      // const { unit, ...tail } = value
+      await postDefineShopFreightModel({
+        shopId: depart_id,
+        // unit: Number(unit),
+        // ...tail
+        ...value,
+      });
       setModalVisible(false);
+      await getShopFreightModel({
+        shopId: depart_id,
+        page: freightPage,
+        pageSize: freightPageSize,
+      });
     });
   };
   const handleSubmitModify = () => {
-    form.validateFields().then(value => {
-      // await putModifyFreightModel(value)
+    form.validateFields().then(async value => {
+      await putModifyFreightModel({
+        shopId: depart_id,
+        ...value,
+      });
       setModalVisible(false);
+      await getShopFreightModel({
+        shopId: depart_id,
+        page: freightPage,
+        pageSize: freightPageSize,
+      });
     });
   };
   const columns = useMemo(() => {
@@ -68,29 +93,31 @@ const freight = ({
         key: 'id',
       },
       {
-        title: '名称',
+        title: '运费模板名',
         dataIndex: 'name',
         key: 'name',
       },
       {
-        title: '类型',
+        title: '运费类型',
         dataIndex: 'type',
         key: 'type',
+        render: text => freightModel[text],
       },
       {
-        title: 'unit',
+        title: '计重单位g',
         dataIndex: 'unit',
         key: 'unit',
       },
       {
         title: '是否是默认',
-        dataIndex: 'default',
-        key: 'default',
+        dataIndex: 'defaultModel',
+        key: 'defaultModel',
+        render: text => (Number(text) === 0 ? '非默认' : '默认模板'),
       },
       {
         title: '创建时间',
-        dataIndex: 'gmtCreate',
-        key: 'gmtCreate',
+        dataIndex: 'gmtCreated',
+        key: 'gmtCreated',
       },
       {
         title: '修改时间',
@@ -109,7 +136,7 @@ const freight = ({
                 type="primary"
                 onClick={() => handleModifyFreight(record)}
               >
-                修改活动信息
+                修改模板
               </Button>
               <Button
                 type="default"
@@ -118,7 +145,7 @@ const freight = ({
                 查看详情
               </Button>
               <Button type="danger" onClick={() => handledeleteFreight(record)}>
-                删除活动
+                删除模板
               </Button>
             </Space>
           );
@@ -127,11 +154,11 @@ const freight = ({
     ];
   }, []);
   useEffect(() => {
-    // getShopFreightModel({
-    //   shopId: depart_id,
-    //   page: freightPage,
-    //   pageSize: freightPageSize
-    // });
+    getShopFreightModel({
+      shopId: depart_id,
+      page: freightPage,
+      pageSize: freightPageSize,
+    });
     console.log('fetch new');
   }, [freightPage, freightPageSize]);
   return (
@@ -161,36 +188,36 @@ const freight = ({
         <Form form={form}>
           <Form.Item label="id" name="id" hidden></Form.Item>
           <Form.Item
-            label="活动名"
+            label="运费模板名"
             name="name"
             required
-            rules={[{ required: true, message: '请输入名称' }]}
+            rules={[{ required: true, message: '请输入模板名' }]}
           >
             <Input />
           </Form.Item>
           {Number(modalState) === 0 ? (
             <Form.Item
-              label="类型"
+              label="运费模板类型"
               name="type"
               required
-              rules={[{ required: true, message: '请输入价格' }]}
+              rules={[{ required: true, message: '请输入运费模板类型' }]}
             >
               <Select>
-                <Option value="1">类型1</Option>
-                <Option value="2">类型2</Option>
+                {Object.keys(freightModel).map(key => {
+                  return (
+                    <Option value={Number(key)}>{freightModel[key]}</Option>
+                  );
+                })}
               </Select>
             </Form.Item>
           ) : null}
           <Form.Item
-            label="单元"
+            label="计重单位g"
             name="unit"
             required
-            rules={[{ required: true, message: '请输入价格' }]}
+            rules={[{ required: true, message: '请输入计重单位g' }]}
           >
-            <Select>
-              <Option value="1">unit1</Option>
-              <Option value="2">unit2</Option>
-            </Select>
+            <Input type="number"></Input>
           </Form.Item>
         </Form>
       </Modal>
