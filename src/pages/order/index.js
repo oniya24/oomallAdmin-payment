@@ -129,21 +129,33 @@ const userManage_comment = ({
         title: '原价',
         dataIndex: 'originPrice',
         key: 'originPrice',
+        render: text => {
+          return text || 0;
+        },
       },
       {
         title: '折后价',
         dataIndex: 'discountPrice',
         key: 'discountPrice',
+        render: text => {
+          return text || 0;
+        },
       },
       {
         title: '运费',
         dataIndex: 'freightPrice',
         key: 'freightPrice',
+        render: text => {
+          return text || 0;
+        },
       },
       {
         title: '运送编码 ',
         dataIndex: 'shipmentSn',
         key: 'shipmentSn',
+        render: text => {
+          return text || 0000;
+        },
       },
       {
         title: '创建时间',
