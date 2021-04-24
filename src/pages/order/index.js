@@ -15,6 +15,7 @@ import {
 import { mapStateToProps, mapDispatchToProps } from '@/models/Order';
 import pagination from '@/utils/pagination';
 import { orderTypesPlain } from '@/const/oomall.tsx';
+import { format2Day } from '@/utils/time.tsx';
 const { RangePicker } = DatePicker;
 
 const userManage_comment = ({
@@ -50,11 +51,19 @@ const userManage_comment = ({
     });
   };
   const onFormFinish = value => {
-    const { dateRange, type, state } = value;
+    const { customId, orderSn } = value;
+    console.log(value);
     console.log(dateRange);
-    const [beginTime, endTime] = dateRange;
-    getAllOrder({});
-    console.log('fetch new');
+    // const [beginTime, endTime] = dateRange;
+    getAllOrder({
+      customId,
+      orderSn,
+      // beginTime: beginTime.format("YYYY-MM-DD"),
+      // endTime: endTime.format("YYYY-MM-DD"),
+      shopId: depart_id,
+      page: orderPage,
+      pagesize: orderPageSize,
+    });
   };
   const onFormReset = value => {
     console.log(value);
@@ -71,6 +80,7 @@ const userManage_comment = ({
   };
   useEffect(() => {
     getAllOrder({
+      shopId: depart_id,
       page: orderPage,
       pagesize: orderPageSize,
     });
@@ -161,9 +171,9 @@ const userManage_comment = ({
           onFinish={onFormFinish}
           onReset={onFormReset}
         >
-          <Form.Item label="选择范围" name="dateRange">
+          {/* <Form.Item label="选择范围" name="dateRange">
             <RangePicker />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item label="顾客id" name="customId">
             <Input />
           </Form.Item>

@@ -87,7 +87,7 @@ const model = {
   },
   effects: {
     *getAllOrder({ payload }, { call, put }) {
-      const res = yield call(getAllOrder, payload);
+      const res = yield call(getAllOrderReq, payload);
       if (isErrnoEqual0(res) || isCodeEqualOk(res)) {
         const { data } = res;
         const { list, total } = data;
