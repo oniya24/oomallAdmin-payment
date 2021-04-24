@@ -11,6 +11,7 @@ import {
   Tag,
   Modal,
   DatePicker,
+  Descriptions,
 } from 'antd';
 import { mapStateToProps, mapDispatchToProps } from '@/models/Order';
 import pagination from '@/utils/pagination';
@@ -44,16 +45,19 @@ const userManage_comment = ({
     });
     setDetailModalVisible(true);
   };
-  const handleDeleteOrder = ({ shopId, id }) => {
-    deleteOrderById({
+  const handleDeleteOrder = async ({ shopId, id }) => {
+    await deleteOrderById({
       shopId,
       id,
+    });
+    await getAllOrder({
+      shopId: depart_id,
+      page: orderPage,
+      pagesize: orderPageSize,
     });
   };
   const onFormFinish = value => {
     const { customId, orderSn } = value;
-    console.log(value);
-    console.log(dateRange);
     // const [beginTime, endTime] = dateRange;
     getAllOrder({
       customId,
@@ -93,18 +97,22 @@ const userManage_comment = ({
         dataIndex: 'customerId',
         key: 'customerId',
       },
-      {
-        title: 'pid',
-        dataIndex: 'pid',
-        key: 'pid',
-      },
+      // {
+      //   title: 'pid',
+      //   dataIndex: 'pid',
+      //   key: 'pid',
+      // },
       {
         title: '订单类型',
         dataIndex: 'orderType',
         key: 'orderType',
         render: (text, record) => {
           const colors = ['#f50', '#2db7f5', '#87d068'];
-          return <Tag color={colors[text]}>{orderTypesPlain[text]}</Tag>;
+          return text ? (
+            <Tag color={colors[text]}>{orderTypesPlain[text]}</Tag>
+          ) : (
+            '未知'
+          );
         },
       },
       {
@@ -112,11 +120,11 @@ const userManage_comment = ({
         dataIndex: 'state',
         key: 'state',
       },
-      {
-        title: '子状态',
-        dataIndex: 'subState',
-        key: 'subState',
-      },
+      // {
+      //   title: '子状态',
+      //   dataIndex: 'subState',
+      //   key: 'subState',
+      // },
       {
         title: '原价',
         dataIndex: 'originPrice',
@@ -204,7 +212,26 @@ const userManage_comment = ({
         okText={[]}
         onCancel={() => setDetailModalVisible(false)}
       >
-        {JSON.stringify(orderDetail)}
+        <Descriptions column={2}>
+          <Descriptions.Item label="收货人">
+            {orderDetail.consignee}
+          </Descriptions.Item>
+          <Descriptions.Item label="手机号">
+            {orderDetail.mobile}
+          </Descriptions.Item>
+          <Descriptions.Item label="收货地址">
+            {orderDetail.address}
+          </Descriptions.Item>
+          <Descriptions.Item label="运费价格">
+            {orderDetail.freightPrice}
+          </Descriptions.Item>
+          <Descriptions.Item label="订单号">
+            {orderDetail.orderSn}
+          </Descriptions.Item>
+          <Descriptions.Item label="订单类型">
+            {orderDetail.orderType}
+          </Descriptions.Item>
+        </Descriptions>
         {state === 0 ? (
           <Form size="small" layout="inline" onFinish={handleDeliverSubmit}>
             <Form.Item label="商家发货编号" name="freightSn">

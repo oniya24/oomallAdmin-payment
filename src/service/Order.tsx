@@ -50,7 +50,9 @@ export const deleteOrderByIdReq = ({
   shopId: number;
   id: number;
 }) => {
-  return request(`/shops/${shopId}/orders/${id}`);
+  return request(`/shops/${shopId}/orders/${id}`, {
+    method: 'delete',
+  });
 };
 
 // 店家对订单标记发货

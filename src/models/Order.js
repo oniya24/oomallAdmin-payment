@@ -101,7 +101,7 @@ const model = {
       }
     },
     *getOrderById({ payload }, { call, put }) {
-      const res = yield call(getAllOrderReq, payload);
+      const res = yield call(getOrderByIdReq, payload);
       if (isErrnoEqual0(res) || isCodeEqualOk(res)) {
         const { data } = res;
         yield put({
