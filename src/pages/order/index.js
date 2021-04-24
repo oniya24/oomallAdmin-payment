@@ -130,7 +130,7 @@ const userManage_comment = ({
         dataIndex: 'originPrice',
         key: 'originPrice',
         render: text => {
-          return text || 0;
+          return text || '0';
         },
       },
       {
@@ -138,7 +138,7 @@ const userManage_comment = ({
         dataIndex: 'discountPrice',
         key: 'discountPrice',
         render: text => {
-          return text || 0;
+          return text || '0';
         },
       },
       {
@@ -146,7 +146,7 @@ const userManage_comment = ({
         dataIndex: 'freightPrice',
         key: 'freightPrice',
         render: text => {
-          return text || 0;
+          return text || '0';
         },
       },
       {
@@ -154,7 +154,7 @@ const userManage_comment = ({
         dataIndex: 'shipmentSn',
         key: 'shipmentSn',
         render: text => {
-          return text || 0000;
+          return text || '0000';
         },
       },
       {
